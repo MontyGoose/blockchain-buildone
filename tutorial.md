@@ -1,7 +1,27 @@
 Before you get started
 ==
-Remember that a blockchain is an immutable, sequential chain of records called Blocks. They can contain transactions, files or any data you like, really. But the important thing is that they’re chained together using hashes.
-In this example, we'll use a simple transaction which just details a from/to/amount relationship.
+Remember that a blockchain is an immutable, sequential chain of records called blocks.
+
+Blocks are basically a structed data item which can contain transactions, files or any data you like, really.  The important thing is that each block is chained to the one before - this is done by creating a hash of of the previous chain and storing it on the next chain.  This chaining is what makes a blockchain the thing it is - linking blocks in sequence, allowing us to prove integrity of the chain, and spot if anything changes.
+
+<<PICTURE NEEDED>>  <<and links to other sites on BC>>
+
+So what does out block look like?
+Each of our blocks will have an index, a timestamp, the data we want to add and the hash of the previous block - remember, we want to chain this block to the previous one.
+
+Like this
+```
+block = {
+    'index': 1,
+    'timestamp': 1507397024,
+    'data': [
+        {
+            'important':'something important stored on the blockchain'
+        }
+    ],
+    'previous_hash': "2aeed9bf82307fd9b9fe164b78c0129ee25696677d5a089b0c6e921550377015"
+}
+```
 
 Rght - let's get started.
 
@@ -75,50 +95,63 @@ Let's just have a quick look at these changes
 Representing Blockchain
 ==
 
-Testable?
---
-
 What do we want to be able to do on out very simple Blockchain.  Let's start super simple -
-* Initialise
-* Add transactions (from a sender, to a recipient, for an amount)
-* Add / Mine a block (proof of work, previous hash (optional))
+* **Initialise** the blockchain
+* **Add data** we want to be able to add some data to a block !
+* **Add / Mine a block** we then want to be able to add the block to the chain
+* **Get last block of the chain** we want to be able to get hold of the the last block
+* **hashing function** we need to be able to create a hash of things, but we probably don't need to expose this, so we'll make it only available to our blockchain class
 
-This will all get more complex - but this is a good place to start.  OK the add/mine a block looks complex already - I mean what are 'proof of work' and 'previous hash' - and why is it optional?  We'll cover this as we go through - but for impatient https://en.wikipedia.org/wiki/Proof-of-work_system and https://en.wikipedia.org/wiki/Hashcash
+This will all get more complex - but this is a good place to start.  
 
-
-Right, for the rest of us - let's create some stub code, that represents the above 3 functions for our blockchain.
+Let's create some stub code, that represents the above 3 functions for our blockchain.
 
 Create a file in the src folder, blockchain.ts, which will represent our blockchain and the functions we've described above.
 
 ```Javascript
+interface Block {  // our block
+  index:number;
+  timestamp:Date;
+  data:Array<string>;
+  hash:number;
+  previous_hash:string;
+}
+
 export class Blockchain {
 
   chain = [];  //holds the whole chain
-  current_transactions = [];  //holds transactions
+  blockData = [];  //holds the data we want to add to a block
 
-  //this will initialise the blockchain, with a genesis block
-  constructor() {     
+  //this will initialise the blockchain
+  constructor() {
   }
 
 
-  // Create a new Block in the Blockchain
-  // :param proof: <number> The proof given by the Proof of Work algorithm
-  // :param previous_hash: (Optional) <string> Hash of previous Block
+  // Add a new Block in the Blockchain
   // :return: <block> the new block
-  new_block(proof:number, previous_hash?:string) {
+  addBlock() {
     return ;
   }
 
-  // Creates a new transaction to go into the next mined Block
-  // :param sender: <string> Address of the Sender
-  // :param recipient: <string> Address of the Recipient
-  // :param amount: <number> Amount
-  // :return: <number> The index of the Block that will hold this transaction
-  new_transaction(sender: string, recipient: string, amount: number) {
+  // Adds some new data to teh next block to be mined
+  // :return: <number> The index of the block that will hold this data
+  addData() {
     return ;
+  }
+
+  // Return the last block of the chain
+  // :return: <block> the last block
+  getLastBlock(){
+    return ;
+  }
+
+  // private hashing function
+  // :param <block>: thing to hash
+  // :return hash: hash
+  private hash(){
+    return;
   }
 }
-
 ```
 
 
@@ -131,42 +164,128 @@ import "mocha";
 
 const expect = chai.expect;
 
-import { Blockchain } from "../src/Blockchain"
+import { Blockchain } from "../src/blockchain.stub.2"
 
 describe('The blockchain', () => {
 
   let blockchain = new Blockchain(); // build a new blockchain
 
-  it('should initialise with a genesis block', () => {
-    expect(blockchain.last_block().index).to.equal(1); // the last block of the chain, will be the first too!
-    expect(blockchain.last_block().previous_hash).to.equal(1); // 1 is the value we'll set for the genesis block
+  it('should initialise correctly', () => {
+    expect(blockchain.getLastBlock().index).to.equal(1); // the first will also be the last !
   });
 
-  it('should allow transactions to be added', () => {
-    let sender = 'sender';
-    let recipient = 'recipient';
-    let amount = 1234;
-    let new_index = blockchain.new_transaction(sender, recipient, amount);
-    expect(new_index).to.equal(blockchain.last_block().index + 1); // the index provided back should be for the next block!
+  it('should allow data to be added', () => {
+    let data = { 'important': 'some important data' };
+    let new_index = blockchain.addData(data);
+    expect(new_index).to.equal(blockchain.getLastBlock().index + 1); // the index provided back should be for the next block!
   });
 
   it('should allow blocks to be added', () => {
-    let new_block = blockchain.new_block(100);
+    let new_block = blockchain.addBlock();
     expect(new_block.index).to.equal(2); // the index provided back should be for the next block! (this is our second)
-    expect(new_block.transactions.length).to.equal(1); //shoud contain the transation we created
-    expect(blockchain.last_block().index).to.equal(2); // the last block of the chain, will be this one
+    expect(new_block.data.length).to.equal(1);  // we only added one item of data
+    expect(new_block.data[0].important).to.equal('some important data'); //should contain the data we added
+    expect(blockchain.getLastBlock().index).to.equal(2); // the last block of the chain, will be this one
   });
 
 });
+
+```
+So this is going to fail like crazy, as we've not written any code in our Blockchain class - but you can still run the test - you should get something like the follow.
+
+```
+> tsc --project tsconfig.json
+
+test/blockchain.stub.spec.ts(13,38): error TS2339: Property 'index' does not exist on type 'void'.
+test/blockchain.stub.spec.ts(18,21): error TS2554: Expected 0 arguments, but got 1.
+test/blockchain.stub.spec.ts(19,58): error TS2339: Property 'index' does not exist on type 'void'.
+test/blockchain.stub.spec.ts(24,22): error TS2339: Property 'index' does not exist on type 'void'.
+test/blockchain.stub.spec.ts(25,22): error TS2339: Property 'data' does not exist on type 'void'.
+test/blockchain.stub.spec.ts(26,22): error TS2339: Property 'data' does not exist on type 'void'.
+test/blockchain.stub.spec.ts(27,38): error TS2339: Property 'index' does not exist on type 'void'.
+npm ERR! Test failed.  See above for more details.
 ```
 
-Lines 1-4 : Setting up mocha and chai
-Line 6 : Import in our Blockchain object
+So let's make it all go away.
+
+Initialise
+This is straighforward - we just want to add a block, we'll delegate working out if this is the first ever block to the addBlock function, so all we need to do here is
+```Javascript
+constructor() {
+  this.addBlock();
+}
+```
+Add some data
+Also this shouldn't tax us - we just want to take in some data, and push onto the blockData array, and the return the block we're wanting to add it to - thus
+```Javascript
+addData(data : Object) {
+  this.blockData.push(data);
+
+  return (this.getLastBlock().index) + 1;
+}
+```
+Return the last block
+Again, this is simple
+```Javascript
+getLastBlock() {
+  return this.chain.slice().pop();
+}
+```
+Adding a block
+A couple of things need to happen here
+* create a block
+* reset the data Array (this way we don't double add data to blocks)
+* add the block to the chain
+
+```Javascript
+// Add a new Block in the Blockchain
+// :return: <block> the new block
+addBlock() {
+  let block = {
+    'index':this.chain.length + 1,
+    'timestamp': Date.now(),
+    'transactions':this.blockData,
+    'previous_hash':(getLastBlock) ? this.hash(this.getLastBlock()) : 1
+  }
+
+  // Reset the current list of transactions
+  this.blockData = [];
+
+  this.chain.push(block);
+  return block;
+}
+```
+The only slightly complex part here is the ternary operator to work out the previous_hash, which is checking is this the first ever block (we don't have a last), and if we don't then setting the previous_hash to 1.
+
+We're going to skip the hashing right now - we'll do that next - so for now, we'll just keep our mock.
+
+Testable?
+With all the changes above made, let's see what happens to our test.
+
+```
+> mocha 'test/*.spec.js'
 
 
 
+  The blockchain
+    ✓ should initialise correctly
+    ✓ should allow data to be added
+    ✓ should allow blocks to be added
 
-Going to get more complex .... time to add hashing of the Block
+
+  3 passing (13ms)
+```
+They will now all pass :-)
+
+Final bit for Part 1 - and we've covered a lot - but we do need to add our Hashing function - at the moment, our blocks don't link together.
+But don't worry, we're not going to write our own SHA-256 algorithm (well not today anyway), we'll use the one that comes with Node.
+As we're already using Node we don't need to re-add it, but we do need to add the typings for Typescript, so at the project root:
+```
+npm install @types/node --save-dev
+```
+
+
+So this is going to get a little more complex, perhaps time to fill up on coffee/tea/water
 Important : JS Object is unordered - so force orderedness (!) - read a block by sorted key, rebuild as a string, and hash that ... forces a hash of a block to always be the same - or we're in the laps of the JS object gods!
 
 Typescript - npm install @types/node
