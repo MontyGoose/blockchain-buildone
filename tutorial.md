@@ -170,24 +170,27 @@ describe('The blockchain', () => {
   let blockchain = new Blockchain(); // build a new blockchain
 
   it('should initialise correctly', () => {
-    expect(blockchain.getLastBlock().index).to.equal(1); // the first will also be the last !
+    expect(blockchain.getChain().length).to.equal(1); // we should have a 'genesis' block !
   });
 
   it('should allow data to be added', () => {
     let data = { 'important': 'some important data' };
     let new_index = blockchain.addData(data);
-    expect(new_index).to.equal(blockchain.getLastBlock().index + 1); // the index provided back should be for the next block!
+    expect(new_index).to.equal(blockchain.getChain().length + 1); // the index provided back should be for the next block!
   });
 
   it('should allow blocks to be added', () => {
     let new_block = blockchain.addBlock();
-    expect(new_block.index).to.equal(2); // the index provided back should be for the next block! (this is our second)
+    expect(new_block.index).to.equal(blockchain.getChain().length); // the index provided back should be for the next block! (this is our second)
     expect(new_block.data.length).to.equal(1);  // we only added one item of data
     expect(new_block.data[0].important).to.equal('some important data'); //should contain the data we added
-    expect(blockchain.getLastBlock().index).to.equal(2); // the last block of the chain, will be this one
   });
 
+  it('should allow the whole chain to be returned', () => {
+    expect(blockchain.getChain().length).to.equal(2);
+  })
 });
+
 
 ```
 So this is going to fail like crazy, as we've not written any code in our Blockchain class - but you can still run the test - you should get something like the follow.
@@ -219,15 +222,14 @@ Also this shouldn't tax us - we just want to take in some data, and push onto th
 ```Javascript
 addData(data : Object) {
   this.blockData.push(data);
-
-  return (this.getLastBlock().index) + 1;
+  return (this.chain.length + 1);  // next block to be added
 }
 ```
-### Return the last block
+### Return the whole chain
 Again, this is simple
 ```Javascript
-getLastBlock() {
-  return this.chain.slice().pop();
+getChain(){
+  return this.chain;
 }
 ```
 ### Adding a block
@@ -241,20 +243,20 @@ A couple of things need to happen here
 // :return: <block> the new block
 addBlock() {
   let block = {
-    'index':this.chain.length + 1,
+    'index':this.chain.length  + 1,  //Javascript arrays start @ 0
     'timestamp': Date.now(),
-    'transactions':this.blockData,
-    'previous_hash':(getLastBlock) ? this.hash(this.getLastBlock()) : 1
+    'data':this.blockData,
+    'previous_hash':(this.chain.length > 0) ? this.hash(this.chain.slice().pop()) : 1
   }
 
-  // Reset the current list of transactions
+  // Reset the current list of data
   this.blockData = [];
-
+  // add the block to the chain
   this.chain.push(block);
   return block;
 }
 ```
-The only slightly complex part here is the ternary operator to work out the previous_hash, which is checking is this the first ever block (we don't have a last), and if we don't then setting the previous_hash to 1.
+The only slightly complex part here is the ternary operator to work out the previous_hash, which is checking if there are alredy blocks, and if so setting the previous_hash to a hash of the previous block, or if it's the first ever setting to 1, which is one of our test conditions.
 
 We're going to skip the hashing right now - we'll do that next - so for now, we'll just keep our mock.
 
@@ -264,27 +266,27 @@ With all the changes above made, let's see what happens to our test.
 ```
 > mocha 'test/*.spec.js'
 
-
-
   The blockchain
     ✓ should initialise correctly
     ✓ should allow data to be added
     ✓ should allow blocks to be added
+    ✓ should allow the whole chain to be returned
 
+  4 passing (13ms)
 
-  3 passing (13ms)
 ```
 They will now all pass :-)
 
 Final bit for Part 1 - and we've covered a lot - but we do need to add our Hashing function - at the moment, our blocks don't link together.
-But don't worry, we're not going to write our own SHA-256 algorithm (well not today anyway), we'll use the one that comes with Node.
+And don't worry, we're not going to write our own SHA-256 algorithm (well not today anyway), we'll use the one that comes with Node.
 As we're already using Node we don't need to re-add it, but we do need to add the typings for Typescript, so at the project root:
 ```
 npm install @types/node --save-dev
 ```
 
-
 So this is going to get a little more complex, perhaps time to fill up on coffee/tea/water
+
+
 Important : JS Object is unordered - so force orderedness (!) - read a block by sorted key, rebuild as a string, and hash that ... forces a hash of a block to always be the same - or we're in the laps of the JS object gods!
 
 Typescript - npm install @types/node
