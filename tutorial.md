@@ -31,7 +31,7 @@ Build a project
 mkdir buildone
 cd buildone
 ```
-Let's do this
+Let's build a structure like this
 
 ```
 proj/
@@ -46,8 +46,8 @@ mkdir test
 mkdir dist
 ```
 
-Initialise the project
---
+## Initialise the project
+
 
 ```
 npm init
@@ -62,8 +62,8 @@ This will create an empty **tsconig.json** - which like the **package.json** we'
 
 Right, we have out project structure, now we'll install some simple stuff we'll need.
 
-Install modules
---
+## Install modules
+
 Let's start as we meant to go on, and install some testing tools  .. oh yes we are ...that's why we created a test folder ...  
 I'm choosing [mocha](https://mochajs.org/) and [chai](http://chaijs.com/) for this - you can use you're own favourites, but all my examples and code will be mocha/chai flavours.
 ```
@@ -99,12 +99,12 @@ What do we want to be able to do on out very simple Blockchain.  Let's start sup
 * **Initialise** the blockchain
 * **Add data** we want to be able to add some data to a block !
 * **Add / Mine a block** we then want to be able to add the block to the chain
-* **Get last block of the chain** we want to be able to get hold of the the last block
-* **hashing function** we need to be able to create a hash of things, but we probably don't need to expose this, so we'll make it only available to our blockchain class
+* **Return the chain** we want to be able to get hold of the whole chain
+* **Hashing function** we need to be able to create a hash of things, but we don't need to expose this, so we'll make it only available to our blockchain class
 
 This will all get more complex - but this is a good place to start.  
 
-Let's create some stub code, that represents the above 3 functions for our blockchain.
+Let's create some stub code, that represents the above functions for our blockchain.
 
 Create a file in the src folder, blockchain.ts, which will represent our blockchain and the functions we've described above.
 
@@ -126,7 +126,6 @@ export class Blockchain {
   constructor() {
   }
 
-
   // Add a new Block in the Blockchain
   // :return: <block> the new block
   addBlock() {
@@ -141,7 +140,7 @@ export class Blockchain {
 
   // Return the last block of the chain
   // :return: <block> the last block
-  getLastBlock(){
+  getChain(){
     return ;
   }
 
@@ -208,14 +207,14 @@ npm ERR! Test failed.  See above for more details.
 
 So let's make it all go away.
 
-Initialise
+### Initialise
 This is straighforward - we just want to add a block, we'll delegate working out if this is the first ever block to the addBlock function, so all we need to do here is
 ```Javascript
 constructor() {
   this.addBlock();
 }
 ```
-Add some data
+### Add some data
 Also this shouldn't tax us - we just want to take in some data, and push onto the blockData array, and the return the block we're wanting to add it to - thus
 ```Javascript
 addData(data : Object) {
@@ -224,14 +223,14 @@ addData(data : Object) {
   return (this.getLastBlock().index) + 1;
 }
 ```
-Return the last block
+### Return the last block
 Again, this is simple
 ```Javascript
 getLastBlock() {
   return this.chain.slice().pop();
 }
 ```
-Adding a block
+### Adding a block
 A couple of things need to happen here
 * create a block
 * reset the data Array (this way we don't double add data to blocks)
@@ -259,7 +258,7 @@ The only slightly complex part here is the ternary operator to work out the prev
 
 We're going to skip the hashing right now - we'll do that next - so for now, we'll just keep our mock.
 
-Testable?
+### Testable?
 With all the changes above made, let's see what happens to our test.
 
 ```

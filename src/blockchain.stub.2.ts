@@ -21,15 +21,15 @@ export class Blockchain {
   // :return: <block> the new block
   addBlock() {
     let block = {
-      'index':this.chain.length + 1,
+      'index':this.chain.length  + 1,  //Javascript arrays start @ 0
       'timestamp': Date.now(),
       'data':this.blockData,
-      'previous_hash':(this.getLastBlock()) ? this.hash(this.getLastBlock()) : 1
+      'previous_hash':(this.chain.length > 0) ? this.hash(this.chain.slice().pop()) : 1
     }
 
-    // Reset the current list of transactions
+    // Reset the current list of data
     this.blockData = [];
-
+    // add the block to the chain
     this.chain.push(block);
     return block;
   }
@@ -38,14 +38,13 @@ export class Blockchain {
   // :return: <number> The index of the block that will hold this data
   addData(data : Object) {
     this.blockData.push(data);
-
-    return (this.getLastBlock().index) + 1;
+    return (this.chain.length + 1);  // next block to be added
   }
 
-  // Return the last block of the chain
-  // :return: <block> the last block
-  getLastBlock(){
-    return this.chain.slice().pop();
+  // Return the chain
+  // :return: [<block>] the last block
+  getChain(){
+    return this.chain;
   }
 
   private hash(block: Block) {
