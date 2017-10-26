@@ -48,6 +48,7 @@ export class Blockchain {
   }
 
   private hash(block: Block) {
-    return ;
+    let hash = Crypto.
+    return hash;
   }
 }

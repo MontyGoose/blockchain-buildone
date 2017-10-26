@@ -65,10 +65,10 @@ Right, we have out project structure, now we'll install some simple stuff we'll 
 ## Install modules
 
 Let's start as we meant to go on, and install some testing tools  .. oh yes we are ...that's why we created a test folder ...  
-I'm choosing [mocha](https://mochajs.org/) and [chai](http://chaijs.com/) for this - you can use you're own favourites, but all my examples and code will be mocha/chai flavours.
+I'm choosing [mocha](https://mochajs.org/) / [chai](http://chaijs.com/) and [sinon](http://sinonjs.org/) for this - you can use you're own favourites, but all my examples and code will be mocha/chai flavours.
 ```
-npm install mocha chai --save-dev
-npm install @types/chai @types/mocha --save-dev
+npm install mocha chai sinon --save-dev
+npm install @types/chai @types/mocha @types/sinon --save-dev
 ```
 The first line installs the node_modules, the second the corresponding types files for Typescript
 
@@ -159,6 +159,7 @@ Let's create a test which represents this;
 create a file in the test folder, blockchain.spec.ts
 ```Javascript
 import * as chai from "chai";
+import * as sinon from "sinon";
 import "mocha";
 
 const expect = chai.expect;
@@ -168,6 +169,15 @@ import { Blockchain } from "../src/blockchain.stub.2"
 describe('The blockchain', () => {
 
   let blockchain = new Blockchain(); // build a new blockchain
+  let clock;
+  let now = new Date();
+
+  beforeEach(() => {
+    clock = sinon.useFakeTimers(now.getTime());
+  });
+  afterEach(() => {
+    clock.restore();
+  });
 
   it('should initialise correctly', () => {
     expect(blockchain.getChain().length).to.equal(1); // we should have a 'genesis' block !
@@ -184,14 +194,13 @@ describe('The blockchain', () => {
     expect(new_block.index).to.equal(blockchain.getChain().length); // the index provided back should be for the next block! (this is our second)
     expect(new_block.data.length).to.equal(1);  // we only added one item of data
     expect(new_block.data[0].important).to.equal('some important data'); //should contain the data we added
+    expect(new_block.timestamp).to.equal(now.getTime());
   });
 
   it('should allow the whole chain to be returned', () => {
     expect(blockchain.getChain().length).to.equal(2);
   })
 });
-
-
 ```
 So this is going to fail like crazy, as we've not written any code in our Blockchain class - but you can still run the test - you should get something like the follow.
 
@@ -285,6 +294,10 @@ npm install @types/node --save-dev
 ```
 
 So this is going to get a little more complex, perhaps time to fill up on coffee/tea/water
+
+Now as the hashing function is private, we can't directly test it, but we can test the output as part of adding block.
+The first block the previous hash will be 1
+The second block the previous hash will be a hash of block 1.  So if we force block 1 to be something we know, we can then test that the previous hash of block 2 will be something known too.
 
 
 Important : JS Object is unordered - so force orderedness (!) - read a block by sorted key, rebuild as a string, and hash that ... forces a hash of a block to always be the same - or we're in the laps of the JS object gods!
