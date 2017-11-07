@@ -2,7 +2,7 @@ Before you get started
 ==
 Remember that a blockchain is an immutable, sequential chain of records called blocks.
 
-Blocks are basically a structed data item which can contain transactions, files or any data you like, really.  The important thing is that each block is chained to the one before - this is done by creating a hash of of the previous chain and storing it on the next chain.  This chaining is what makes a blockchain the thing it is - linking blocks in sequence, allowing us to prove integrity of the chain, and spot if anything changes.
+Blocks are basically a structured data item which can contain transactions, files or any data you like, really.  The important thing is that each block is chained to the one before - this is done by creating a hash of of the previous chain and storing it on the next chain.  This chaining is what makes a blockchain the thing it is - linking blocks in sequence, allowing us to prove integrity of the chain, and spot if anything changes.
 
 <<PICTURE NEEDED>>  <<and links to other sites on BC>>
 
@@ -227,7 +227,7 @@ constructor() {
 }
 ```
 ### Add some data
-Also this shouldn't tax us - we just want to take in some data, and push onto the blockData array, and the return the block we're wanting to add it to - thus
+Also this shouldn't tax us - we just want to take in some data, and push onto the blockData array, and the return the index of the block we've just added data to - thus
 ```Javascript
 addData(data : Object) {
   this.blockData.push(data);
@@ -242,10 +242,10 @@ getChain(){
 }
 ```
 ### Adding a block
-A couple of things need to happen here
-* create a block
-* reset the data Array (this way we don't double add data to blocks)
-* add the block to the chain
+A few of things need to happen here
+1. create a block
+2. clear our the data array (this way we don't double add data to blocks)
+3. add the block to the chain
 
 ```Javascript
 // Add a new Block in the Blockchain
@@ -293,22 +293,151 @@ As we're already using Node we don't need to re-add it, but we do need to add th
 npm install @types/node --save-dev
 ```
 
-So this is going to get a little more complex, perhaps time to fill up on coffee/tea/water
+So this is going to get a little more complex, perhaps time to fill up on coffee/tea/water - final push for today!
 
-Now as the hashing function is private, we can't directly test it, but we can test the output as part of adding block.
-The first block the previous hash will be 1
-The second block the previous hash will be a hash of block 1.  So if we force block 1 to be something we know, we can then test that the previous hash of block 2 will be something known too.
+Now as the hashing function is private, we can't directly test it, but we can test the output as part of adding block.  We can use our blockchain knowledge here to create a simple testable state.
 
+* We know that for out blockchain that for the first (genesis) block the previous hash will be 1  (we hardcoded that in the genesis block - remember the complicated ternary in 'addBlock'?)
+* We also know that for the second block the previous hash will be a hash of the genesis block.  So it stands to reason that if we know the contents of the genesis block, we can then test the 'previous hash' of block 2  - as it will be the hashed version of something we know ... !
 
-Important : JS Object is unordered - so force orderedness (!) - read a block by sorted key, rebuild as a string, and hash that ... forces a hash of a block to always be the same - or we're in the laps of the JS object gods!
+We'll test both apsects above.
 
-Typescript - npm install @types/node
+The first is easier.
 
-Something like ->
-var string = '';
-Object.keys(data)
-      .sort()
-      .forEach(function(v, i) {
-        string += data[v]
-       });
-retrurn hasher(string);
+We initialise the blockchain, and then test what's been created.  We did this before.
+```Javascript
+describe('The blockchain hashing function', () => {
+  let blockchain = new Blockchain(); // build a new blockchain
+
+  it('should set genesis PH = 1', () => {
+    expect(blockchain.getChain().length).to.equal(1); // we should have a 'genesis' block !
+    expect(blockchain.getChain().slice().pop().previous_hash).to.equal(1);
+  });
+});
+```
+
+This will work right now - as setting previous hash (PH) of the genesis to '1' was in our original code.
+
+So - now the 2nd part ..
+
+first we need to add Node Cryto typing to our test code - which is simply adding
+```Javascript
+import * as crypto from "crypto";
+```
+to the top of the test file.
+
+We also need to add our fake clocks again as we have a timestamp in the block chain, so let's see what the whole of this test case would look like; and we can then unpick the hashing part.
+
+```Javascript
+describe('The blockchain hashing function', () => {
+  let blockchain = new Blockchain(); // build a new blockchain
+  let clock;
+  let now = new Date();
+
+  beforeEach(() => {
+    clock = sinon.useFakeTimers(now.getTime());
+  });
+  afterEach(() => {
+    clock.restore();
+  });
+
+  it('should set genesis PH = 1', () => {
+    expect(blockchain.getChain().length).to.equal(1); // we should have a 'genesis' block !
+    expect(blockchain.getChain().slice().pop().previous_hash).to.equal(1);
+  });
+
+  it('should set Block2 PH correctly', () => {
+    let genesisBlock = {index: 1, timestamp: now.getTime(), data: [], previous_hash: 1};  // our genesis block
+    let hashedGenesisBlock = crypto.createHash('sha256').update(genesisBlock.toString()).digest('hex');  // hashed version
+
+    let data = { 'important': 'some important data' };
+    blockchain.addData(data);
+    blockchain.addBlock();
+    expect(blockchain.getChain().slice().pop().previous_hash).to.equal(hashedGenesisBlock); // previous hash should equal hashedGenesisBlock
+  });
+
+});
+```
+
+Right!  The part we're interested in is in the 'should set Block2 PH correctly' part.  We'll go through it line by line
+```Javascript
+let genesisBlock = {index: 1, timestamp: now.getTime(), data: [], previous_hash: 1};
+```
+
+Here we're creating what out Genesis block looks like.  Very simple.  There shouldn't be a suprise here.
+
+```Javascript
+let hashedGenesisBlock = crypto.createHash('sha256').update(genesisBlock.toString()).digest('hex');  // hashed version
+```
+What!  Now it's suddenly got a bit crazy.  But let's deconstruct.  
+* crypto - the handle to the [Node crypto module](https://nodejs.org/api/crypto.html#crypto_crypto)
+* createHash('sha256') - creates a Hash object (empty) using the sha256 algorithm
+* update(genesisBlock.toString()) - updates the Hash object with the genesisBlock converted to a string
+* digest('hex') - calculates the digest (as hex) of all the data passed into the Hash object (in our case just the block)
+
+All in all - perhaps a long winded way (you can create you're own helper fn) of creating a hash of our block :-)
+
+Now it gets easier.
+```Javascript
+let data = { 'important': 'some important data' };
+blockchain.addData(data);
+blockchain.addBlock();
+```
+
+These 3 lines are back to our Blockchain implementation, and adding data to a block, and then adding the block to the chain.
+
+```Javascript
+expect(blockchain.getChain().slice().pop().previous_hash).to.equal(hashedGenesisBlock); // previous hash should equal hashedGenesisBlock
+```
+
+We can now test.  We expect the previous hash of the block we just added (the last one on the chain) to equal the hash we just manually created.
+
+Of course this will fail - we like failling tests ... but you can run
+```
+npm test
+```
+
+if you like.
+
+### Hashing a block
+So now we need to implement the hashing function.  And since we've done the hard work in the test - this is now quite straightforward
+
+First, as per the test, we need to add Node Cryto typing to our Blockchain.ts code - which is simply adding
+
+```Javascript
+import * as crypto from "crypto";
+```
+to the top of the file.
+
+Then some changes to the function itself
+* it should take 'Block' as an input parameter
+* should hash the block and return it.
+```Javascript
+private hash(block: Block) {
+  let hash = crypto.createHash('sha256').update(block.toString()).digest('hex');
+  return hash;
+}
+```
+
+And that's it.
+
+```
+npm test
+```
+
+Should all be green!
+
+##RECAP
+
+So what have we done / learnt.
+
+* What a block chain is
+* Written some code that
+..* Creates a block chain object
+..* Instantiates itself with a genesis block
+..* allows data to be added to blocks
+..* lets blocks be added to the chain
+..* block have a link to the previous block, by hashing the content of the previous block
+* Tested it allows
+
+In the next tutorial, we'll extent this ...

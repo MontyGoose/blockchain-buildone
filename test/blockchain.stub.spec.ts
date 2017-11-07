@@ -2,6 +2,9 @@ import * as chai from "chai";
 import * as sinon from "sinon";
 import "mocha";
 
+import * as crypto from "crypto";
+
+
 const expect = chai.expect;
 
 import { Blockchain } from "../src/blockchain.stub.2"
@@ -43,5 +46,31 @@ describe('The blockchain', () => {
 });
 
 
-describe('The blockchain', () => {
+describe('The blockchain hashing function', () => {
+  let blockchain = new Blockchain(); // build a new blockchain
+  let clock;
+  let now = new Date();
+
+  beforeEach(() => {
+    clock = sinon.useFakeTimers(now.getTime());
+  });
+  afterEach(() => {
+    clock.restore();
+  });
+
+  it('should set genesis PH = 1', () => {
+    expect(blockchain.getChain().length).to.equal(1); // we should have a 'genesis' block !
+    expect(blockchain.getChain().slice().pop().previous_hash).to.equal(1);
+  });
+
+  it('should set Block2 PH correctly', () => {
+    let genesisBlock = {index: 1, timestamp: now.getTime(), data: [], previous_hash: 1};  // our genesis block
+    let hashedGenesisBlock = crypto.createHash('sha256').update(genesisBlock.toString()).digest('hex');  // hashed version
+
+    let data = { 'important': 'some important data' };
+    blockchain.addData(data);
+    blockchain.addBlock();
+    expect(blockchain.getChain().slice().pop().previous_hash).to.equal(hashedGenesisBlock); // previous hash should equal hashedGenesisBlock
+  });
+
 });

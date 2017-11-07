@@ -1,3 +1,5 @@
+import * as crypto from "crypto";
+
 interface Block {  // our block
   index:number;
   timestamp:Date;
@@ -48,7 +50,7 @@ export class Blockchain {
   }
 
   private hash(block: Block) {
-    let hash = Crypto.
+    let hash = crypto.createHash('sha256').update(block.toString()).digest('hex');
     return hash;
   }
 }

@@ -1,5 +1,6 @@
 "use strict";
 exports.__esModule = true;
+var crypto = require("crypto");
 var Blockchain = /** @class */ (function () {
     //this will initialise the blockchain
     function Blockchain() {
@@ -34,7 +35,8 @@ var Blockchain = /** @class */ (function () {
         return this.chain;
     };
     Blockchain.prototype.hash = function (block) {
-        return;
+        var hash = crypto.createHash('sha256').update(block.toString()).digest('hex');
+        return hash;
     };
     return Blockchain;
 }());

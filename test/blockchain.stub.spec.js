@@ -3,6 +3,7 @@ exports.__esModule = true;
 var chai = require("chai");
 var sinon = require("sinon");
 require("mocha");
+var crypto = require("crypto");
 var expect = chai.expect;
 var blockchain_stub_2_1 = require("../src/blockchain.stub.2");
 describe('The blockchain', function () {
@@ -34,5 +35,26 @@ describe('The blockchain', function () {
         expect(blockchain.getChain().length).to.equal(2);
     });
 });
-describe('The blockchain', function () {
+describe('The blockchain hashing function', function () {
+    var blockchain = new blockchain_stub_2_1.Blockchain(); // build a new blockchain
+    var clock;
+    var now = new Date();
+    beforeEach(function () {
+        clock = sinon.useFakeTimers(now.getTime());
+    });
+    afterEach(function () {
+        clock.restore();
+    });
+    it('should set genesis PH = 1', function () {
+        expect(blockchain.getChain().length).to.equal(1); // we should have a 'genesis' block !
+        expect(blockchain.getChain().slice().pop().previous_hash).to.equal(1);
+    });
+    it('should set Block2 PH correctly', function () {
+        var genesisBlock = { index: 1, timestamp: now.getTime(), data: [], previous_hash: 1 }; // our genesis block
+        var hashedGenesisBlock = crypto.createHash('sha256').update(genesisBlock.toString()).digest('hex'); // hashed version
+        var data = { 'important': 'some important data' };
+        blockchain.addData(data);
+        blockchain.addBlock();
+        expect(blockchain.getChain().slice().pop().previous_hash).to.equal(hashedGenesisBlock); // previous hash should equal hashedGenesisBlock
+    });
 });
