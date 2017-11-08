@@ -1,4 +1,17 @@
-Before you get started
+Overview
+==
+The intention of this tutorial is for the inquisitive techy to learn some of the fundamentals around blockchain by doing and building, rather than reading.  To be clear, this is not going to be a fully fledged blockchain which will rival Ethereum, BitCoin and the like :-), neither is it designed to teach you how to code.
+
+* I'm using Javascript because I like it.
+* I am not advocating anything.
+* This will have security/implementation holes.
+* This is NOT a fully working blockchain solution.
+* It's a bit of fun
+* I found it useful to write, I hope you find it useful to read.
+
+Enjoy (or not)
+
+Before we get started
 ==
 Remember that a blockchain is an immutable, sequential chain of records called blocks.
 
@@ -427,17 +440,18 @@ npm test
 
 Should all be green!
 
-##RECAP
+RECAP
+==
 
 So what have we done / learnt.
 
-* What a block chain is
+* Fundamentals of what a block chain is
 * Written some code that
-..* Creates a block chain object
-..* Instantiates itself with a genesis block
-..* allows data to be added to blocks
-..* lets blocks be added to the chain
-..* block have a link to the previous block, by hashing the content of the previous block
-* Tested it allows
+  * Creates a block chain object
+  * Instantiates itself with a genesis block
+  * Allows data to be added to blocks
+  * Lets blocks be added to the chain
+  * Links a block to the previous block, by hashing the previous block
+* Tests
 
 In the next tutorial, we'll extent this ...
