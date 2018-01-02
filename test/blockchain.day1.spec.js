@@ -5,9 +5,9 @@ var sinon = require("sinon");
 require("mocha");
 var crypto = require("crypto");
 var expect = chai.expect;
-var blockchain_stub_2_1 = require("../src/blockchain.stub.2");
+var blockchain_day1_1 = require("../src/day1/blockchain.day1");
 describe('The blockchain', function () {
-    var blockchain = new blockchain_stub_2_1.Blockchain(); // build a new blockchain
+    var blockchain = new blockchain_day1_1.Blockchain(); // build a new blockchain
     var clock;
     var now = new Date();
     beforeEach(function () {
@@ -36,7 +36,7 @@ describe('The blockchain', function () {
     });
 });
 describe('The blockchain hashing function', function () {
-    var blockchain = new blockchain_stub_2_1.Blockchain(); // build a new blockchain
+    var blockchain = new blockchain_day1_1.Blockchain(); // build a new blockchain
     var clock;
     var now = new Date();
     beforeEach(function () {

@@ -7,7 +7,7 @@ import * as crypto from "crypto";
 
 const expect = chai.expect;
 
-import { Blockchain } from "../src/blockchain.stub.2"
+import { Blockchain } from "../src/day1/blockchain.day1"
 
 describe('The blockchain', () => {
 
