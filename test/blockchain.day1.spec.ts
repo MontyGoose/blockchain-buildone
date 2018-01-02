@@ -27,7 +27,7 @@ describe('The blockchain', () => {
   });
 
   it('should allow data to be added', () => {
-    let data = { 'important': 'some important data' };
+    let data = 'some important data';
     let new_index = blockchain.addData(data);
     expect(new_index).to.equal(blockchain.getChain().length + 1); // the index provided back should be for the next block!
   });
@@ -36,7 +36,7 @@ describe('The blockchain', () => {
     let new_block = blockchain.addBlock();
     expect(new_block.index).to.equal(blockchain.getChain().length); // the index provided back should be for the next block! (this is our second)
     expect(new_block.data.length).to.equal(1);  // we only added one item of data
-    expect(new_block.data[0].important).to.equal('some important data'); //should contain the data we added
+    expect(new_block.data[0]).to.equal("some important data"); //should contain the data we added
     expect(new_block.timestamp).to.equal(now.getTime());
   });
 
@@ -60,7 +60,7 @@ describe('The blockchain hashing function', () => {
 
   it('should set genesis PH = 1', () => {
     expect(blockchain.getChain().length).to.equal(1); // we should have a 'genesis' block !
-    expect(blockchain.getChain().slice().pop().previous_hash).to.equal(1);
+    expect(blockchain.getChain().slice().pop().previous_hash).to.equal('1');
   });
 
   it('should set Block2 PH correctly', () => {

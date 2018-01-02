@@ -32,6 +32,7 @@ block = {
             'important':'something important stored on the blockchain'
         }
     ],
+    'hash': "2aeed9bf82307fd9b9fe164b78c0129ee25696677d5a089b0c6e921550377015",
     'previous_hash': "2aeed9bf82307fd9b9fe164b78c0129ee25696677d5a089b0c6e921550377015"
 }
 ```
@@ -197,7 +198,7 @@ describe('The blockchain', () => {
   });
 
   it('should allow data to be added', () => {
-    let data = { 'important': 'some important data' };
+    let data = 'some important data';
     let new_index = blockchain.addData(data);
     expect(new_index).to.equal(blockchain.getChain().length + 1); // the index provided back should be for the next block!
   });
@@ -206,7 +207,7 @@ describe('The blockchain', () => {
     let new_block = blockchain.addBlock();
     expect(new_block.index).to.equal(blockchain.getChain().length); // the index provided back should be for the next block! (this is our second)
     expect(new_block.data.length).to.equal(1);  // we only added one item of data
-    expect(new_block.data[0].important).to.equal('some important data'); //should contain the data we added
+    expect(new_block.data[0]).to.equal('some important data'); //should contain the data we added
     expect(new_block.timestamp).to.equal(now.getTime());
   });
 
@@ -264,12 +265,14 @@ A few of things need to happen here
 // Add a new Block in the Blockchain
 // :return: <block> the new block
 addBlock() {
-  let block = {
+  let block : Block = {
     'index':this.chain.length  + 1,  //Javascript arrays start @ 0
     'timestamp': Date.now(),
     'data':this.blockData,
-    'previous_hash':(this.chain.length > 0) ? this.hash(this.chain.slice().pop()) : 1
+    'hash':'0',//create with empty hash
+    'previous_hash':(this.chain.length > 0) ? this.hash(this.chain.slice().pop()) : '1'
   }
+  block.hash = this.hash(block); // create the hash for this block
 
   // Reset the current list of data
   this.blockData = [];
@@ -278,7 +281,7 @@ addBlock() {
   return block;
 }
 ```
-The only slightly complex part here is the ternary operator to work out the previous_hash, which is checking if there are alredy blocks, and if so setting the previous_hash to a hash of the previous block, or if it's the first ever setting to 1, which is one of our test conditions.
+The only slightly complex part here is the ternary operator to work out the previous_hash, which is checking if there are any blocks, and if so setting the previous_hash to a hash of the previous block, or if it's the first ever setting to 1, which is one of our test conditions.
 
 We're going to skip the hashing right now - we'll do that next - so for now, we'll just keep our mock.
 
@@ -324,7 +327,7 @@ describe('The blockchain hashing function', () => {
 
   it('should set genesis PH = 1', () => {
     expect(blockchain.getChain().length).to.equal(1); // we should have a 'genesis' block !
-    expect(blockchain.getChain().slice().pop().previous_hash).to.equal(1);
+    expect(blockchain.getChain().slice().pop().previous_hash).to.equal('1');
   });
 });
 ```
@@ -356,7 +359,7 @@ describe('The blockchain hashing function', () => {
 
   it('should set genesis PH = 1', () => {
     expect(blockchain.getChain().length).to.equal(1); // we should have a 'genesis' block !
-    expect(blockchain.getChain().slice().pop().previous_hash).to.equal(1);
+    expect(blockchain.getChain().slice().pop().previous_hash).to.equal('1');
   });
 
   it('should set Block2 PH correctly', () => {

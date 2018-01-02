@@ -3,8 +3,8 @@ import * as crypto from "crypto";
 interface Block {  // our block
   index:number;
   timestamp:Date;
-  data:Array<string>;
-  hash:number;
+  data:Array<Object>;
+  hash:string;
   previous_hash:string;
 }
 
@@ -22,12 +22,15 @@ export class Blockchain {
   // Add a new Block in the Blockchain
   // :return: <block> the new block
   addBlock() {
-    let block = {
+    let block : Block = {
       'index':this.chain.length  + 1,  //Javascript arrays start @ 0
-      'timestamp': Date.now(),
+      'timestamp': new Date(Date.now()),
       'data':this.blockData,
-      'previous_hash':(this.chain.length > 0) ? this.hash(this.chain.slice().pop()) : 1
+      'hash':'0',//create with empty hash
+      'previous_hash':(this.chain.length > 0) ? this.hash(this.chain.slice().pop()) : '1'
     }
+
+    block.hash = this.hash(block); // create the hash for this blocks
 
     // Reset the current list of data
     this.blockData = [];
@@ -47,6 +50,11 @@ export class Blockchain {
   // :return: [<block>] the last block
   getChain(){
     return this.chain;
+  }
+
+  //
+  private mineBlock(difficulty: number) {
+
   }
 
   private hash(block: Block) {

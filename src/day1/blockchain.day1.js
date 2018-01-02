@@ -15,8 +15,10 @@ var Blockchain = /** @class */ (function () {
             'index': this.chain.length + 1,
             'timestamp': Date.now(),
             'data': this.blockData,
-            'previous_hash': (this.chain.length > 0) ? this.hash(this.chain.slice().pop()) : 1
+            'hash': '0',
+            'previous_hash': (this.chain.length > 0) ? this.hash(this.chain.slice().pop()) : '1'
         };
+        block.hash = this.hash(block); // create the hash for this blocks
         // Reset the current list of data
         this.blockData = [];
         // add the block to the chain
