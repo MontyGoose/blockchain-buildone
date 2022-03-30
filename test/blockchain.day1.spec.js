@@ -50,8 +50,8 @@ describe('The blockchain hashing function', function () {
         expect(blockchain.getChain().slice().pop().previous_hash).to.equal('1');
     });
     it('should set Block2 PH correctly', function () {
-        var genesisBlock = { index: 1, timestamp: now.getTime(), data: [], previous_hash: 1 }; // our genesis block
-        var hashedGenesisBlock = crypto.createHash('sha256').update(genesisBlock.toString()).digest('hex'); // hashed version
+        var genesisBlock = { index: 1, timestamp: now.getTime(), data: [], previous_hash: "1" }; // our genesis block
+        var hashedGenesisBlock = crypto.createHash('sha256').update(genesisBlock.previous_hash + genesisBlock.timestamp + genesisBlock.data).digest('hex'); // hashed version
         var data = { 'important': 'some important data' };
         blockchain.addData(data);
         blockchain.addBlock();

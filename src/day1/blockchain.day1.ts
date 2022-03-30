@@ -53,7 +53,7 @@ export class Blockchain {
   }
 
   private hash(block: Block) {
-    let hash = crypto.createHash('sha256').update(block.toString()).digest('hex');
+    let hash = crypto.createHash('sha256').update(block.previous_hash + block.timestamp + block.data).digest('hex');
     return hash;
   }
 }

@@ -363,8 +363,8 @@ describe('The blockchain hashing function', () => {
   });
 
   it('should set Block2 PH correctly', () => {
-    let genesisBlock = {index: 1, timestamp: now.getTime(), data: [], previous_hash: 1};  // our genesis block
-    let hashedGenesisBlock = crypto.createHash('sha256').update(genesisBlock.toString()).digest('hex');  // hashed version
+    let genesisBlock = {index: 1, timestamp: now.getTime(), data: [], previous_hash: "1"};  // our genesis block
+    let hashedGenesisBlock = crypto.createHash('sha256').update(genesisBlock.previous_hash + genesisBlock.timestamp + genesisBlock.data).digest('hex');  // hashed version
 
     let data = { 'important': 'some important data' };
     blockchain.addData(data);
@@ -377,18 +377,18 @@ describe('The blockchain hashing function', () => {
 
 Right!  The part we're interested in is in the 'should set Block2 PH correctly' part.  We'll go through it line by line
 ```Javascript
-let genesisBlock = {index: 1, timestamp: now.getTime(), data: [], previous_hash: 1};
+let genesisBlock = {index: 1, timestamp: now.getTime(), data: [], previous_hash: "1"};  // our genesis block
 ```
 
 Here we're creating what out Genesis block looks like.  Very simple.  There shouldn't be a suprise here.
 
 ```Javascript
-let hashedGenesisBlock = crypto.createHash('sha256').update(genesisBlock.toString()).digest('hex');  // hashed version
+    let hashedGenesisBlock = crypto.createHash('sha256').update(genesisBlock.previous_hash + genesisBlock.timestamp + genesisBlock.data).digest('hex');  // hashed version
 ```
 What!  Now it's suddenly got a bit crazy.  But let's deconstruct.  
 * crypto - the handle to the [Node crypto module](https://nodejs.org/api/crypto.html#crypto_crypto)
 * createHash('sha256') - creates a Hash object (empty) using the sha256 algorithm
-* update(genesisBlock.toString()) - updates the Hash object with the genesisBlock converted to a string
+* update(genesisBlock.previous_hash + ... ... ) - updates the Hash object with the genesisBlock elemnents added together
 * digest('hex') - calculates the digest (as hex) of all the data passed into the Hash object (in our case just the block)
 
 All in all - perhaps a long winded way (you can create you're own helper fn) of creating a hash of our block :-)

@@ -64,8 +64,8 @@ describe('The blockchain hashing function', () => {
   });
 
   it('should set Block2 PH correctly', () => {
-    let genesisBlock = {index: 1, timestamp: now.getTime(), data: [], previous_hash: 1};  // our genesis block
-    let hashedGenesisBlock = crypto.createHash('sha256').update(genesisBlock.toString()).digest('hex');  // hashed version
+    let genesisBlock = {index: 1, timestamp: now.getTime(), data: [], previous_hash: "1"};  // our genesis block
+    let hashedGenesisBlock = crypto.createHash('sha256').update(genesisBlock.previous_hash + genesisBlock.timestamp + genesisBlock.data).digest('hex');  // hashed version
 
     let data = { 'important': 'some important data' };
     blockchain.addData(data);

@@ -38,7 +38,7 @@ var Blockchain = /** @class */ (function () {
         return this.chain;
     };
     Blockchain.prototype.hash = function (block) {
-        var hash = crypto.createHash('sha256').update(block.toString()).digest('hex');
+        var hash = crypto.createHash('sha256').update(block.previous_hash + block.timestamp + block.data).digest('hex');
         return hash;
     };
     return Blockchain;

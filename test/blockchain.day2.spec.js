@@ -74,7 +74,7 @@ describe('The blockchain mining and nonce', function () {
         var block = blockchain.addBlock();
         expect(block.nonce).to.greaterThan(0);
     });
-    it('should have a hash that start with right number of zeros', function () {
+    it('should have a hash that starts with right number of zeros', function () {
         var data = { 'important': 'some important data' };
         blockchain.addData(data);
         var block = blockchain.addBlock();

@@ -8,7 +8,7 @@
     "test-d1": "npm run pretest && mocha 'test/blockchain.day1.spec.js'",
     "test-d2": "npm run pretest && mocha 'test/blockchain.day2.spec.js'",
     "test": "mocha 'test/*.spec.js'",
-    "start": "npm run pretest && node src/index.js"
+    "start": "clear && npm run pretest && node src/index.js"
   },
   "author": "",
   "license": "ISC", 

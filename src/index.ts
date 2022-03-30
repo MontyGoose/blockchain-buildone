@@ -1,8 +1,8 @@
-import { Blockchain } from "../src/day2/blockchain.day2"
+import { Blockchain } from "../src/day1/blockchain.day1"
 
 let blockchain = new Blockchain(); // build a new blockchain
 let data = 'some important data';
-let new_index = blockchain.addData(data);
+let transaction = blockchain.addData(data);
 let new_block = blockchain.addBlock();
 
 
