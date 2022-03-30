@@ -1,12 +1,11 @@
-"use strict";
-exports.__esModule = true;
-exports.Blockchain = void 0;
-var crypto = require("crypto");
+import * as crypto from "crypto";
 var Blockchain = /** @class */ (function () {
     //this will initialise the blockchain (Genesis)
-    function Blockchain() {
+    function Blockchain(difficulty) {
         this.chain = []; //holds the whole chain
         this.blockData = []; //holds the data we want to add to a block
+        this.difficulty = 0;
+        this.difficulty = difficulty;
         this.addBlock();
     }
     // Add a new Block in the Blockchain
@@ -14,7 +13,7 @@ var Blockchain = /** @class */ (function () {
     Blockchain.prototype.addBlock = function () {
         var block = this.createBlock();
         block.hash = this.hash(block); // create the hash for this block
-        this.mineBlock(block, 2);
+        this.mineBlock(block, this.difficulty);
         // Reset the current list of data
         this.blockData = [];
         // add the block to the chain
@@ -28,9 +27,26 @@ var Blockchain = /** @class */ (function () {
         return (this.chain.length + 1); // next block to be added
     };
     // Return the chain
-    // :return: [<block>] all the blocks
+    // :return: [<block>] all the blocks in index order
     Blockchain.prototype.getChain = function () {
-        return this.chain;
+        return this.chain.sort(function (a, b) { return a.index - b.index; });
+    };
+    Blockchain.prototype.validateChain = function () {
+        var _this = this;
+        var valid = true;
+        this.getChain().reverse().forEach(function (chain, idx, arr) {
+            // the hash of the the block should be correct
+            if (chain.hash !== _this.hash(chain)) {
+                console.log("VAKK");
+                valid = false;
+            }
+            // the previous_hash should equal the hash of the next previous chain
+            if (arr[idx + 1] && arr[idx + 1].hash !== chain.previous_hash) {
+                console.log(idx, chain.previous_hash, arr[idx + 1].hash);
+                valid = false;
+            }
+        });
+        return valid;
     };
     //private functions
     // create the next block using the current blockdata
@@ -40,7 +56,7 @@ var Blockchain = /** @class */ (function () {
             'timestamp': Date.now(),
             'data': this.blockData,
             'hash': '0',
-            'previous_hash': (this.chain.length > 0) ? this.hash(this.chain.slice().pop()) : '1',
+            'previous_hash': (this.chain.length > 0) ? this.hash(this.getChain().slice().pop()) : '1',
             'nonce': 0
         };
         return block;
@@ -59,4 +75,4 @@ var Blockchain = /** @class */ (function () {
     };
     return Blockchain;
 }());
-exports.Blockchain = Blockchain;
+export { Blockchain };

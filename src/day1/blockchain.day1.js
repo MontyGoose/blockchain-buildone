@@ -1,7 +1,4 @@
-"use strict";
-exports.__esModule = true;
-exports.Blockchain = void 0;
-var crypto = require("crypto");
+import * as crypto from "crypto";
 var Blockchain = /** @class */ (function () {
     //this will initialise the blockchain
     function Blockchain() {
@@ -17,7 +14,7 @@ var Blockchain = /** @class */ (function () {
             'timestamp': Date.now(),
             'data': this.blockData,
             'hash': '0',
-            'previous_hash': (this.chain.length > 0) ? this.hash(this.chain.slice().pop()) : '1'
+            'previous_hash': (this.chain.length > 0) ? this.hash(this.getChain().slice().pop()) : '1'
         };
         block.hash = this.hash(block); // create the hash for this block
         // Reset the current list of data
@@ -33,9 +30,9 @@ var Blockchain = /** @class */ (function () {
         return (this.chain.length + 1); // next block to be added
     };
     // Return the chain
-    // :return: [<block>] the last block
+    // :return: [<block>] all the blocks in index order
     Blockchain.prototype.getChain = function () {
-        return this.chain;
+        return this.chain.sort(function (a, b) { return a.index - b.index; });
     };
     Blockchain.prototype.hash = function (block) {
         var hash = crypto.createHash('sha256').update(block.previous_hash + block.timestamp + block.data).digest('hex');
@@ -43,4 +40,4 @@ var Blockchain = /** @class */ (function () {
     };
     return Blockchain;
 }());
-exports.Blockchain = Blockchain;
+export { Blockchain };

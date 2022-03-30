@@ -13,9 +13,11 @@ export class Blockchain {
 
   chain = [];  //holds the whole chain
   blockData = [];  //holds the data we want to add to a block
+  difficulty = 0;
 
   //this will initialise the blockchain (Genesis)
-  constructor() {
+  constructor(difficulty: number) {
+    this.difficulty = difficulty;
     this.addBlock();
   }
 
@@ -25,7 +27,7 @@ export class Blockchain {
     let block = this.createBlock();
     block.hash = this.hash(block); // create the hash for this block
 
-    this.mineBlock(block,2);
+    this.mineBlock(block,this.difficulty);
 
     // Reset the current list of data
     this.blockData = [];
@@ -42,9 +44,26 @@ export class Blockchain {
   }
 
   // Return the chain
-  // :return: [<block>] all the blocks
+  // :return: [<block>] all the blocks in index order
   getChain(){
-    return this.chain;
+    return this.chain.sort((a, b) => a.index - b.index);
+  }
+
+  validateChain() {
+    let valid = true;
+    this.getChain().reverse().forEach((chain, idx, arr) => {
+      // the hash of the the block should be correct
+      if (chain.hash !== this.hash(chain)) {
+        console.log("VAKK")
+        valid = false;
+      }
+      // the previous_hash should equal the hash of the next previous chain
+      if (arr[idx + 1] && arr[idx + 1].hash !== chain.previous_hash) {
+        console.log(idx,chain.previous_hash,arr[idx + 1].hash)
+        valid = false;
+      }
+    });
+    return valid;
   }
 
   //private functions
@@ -56,7 +75,7 @@ export class Blockchain {
       'timestamp': Date.now(),
       'data':this.blockData,
       'hash':'0',//create with empty hash
-      'previous_hash':(this.chain.length > 0) ? this.hash(this.chain.slice().pop()) : '1',
+      'previous_hash':(this.chain.length > 0) ? this.hash(this.getChain().slice().pop()) : '1',
       'nonce':0
     }
     return block;

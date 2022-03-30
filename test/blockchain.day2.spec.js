@@ -1,12 +1,10 @@
-"use strict";
-exports.__esModule = true;
-var chai = require("chai");
-var sinon = require("sinon");
-require("mocha");
+import * as chai from "chai";
+import * as sinon from "sinon";
+import "mocha";
 var expect = chai.expect;
-var blockchain_day2_1 = require("../src/day2/blockchain.day2");
+import { Blockchain } from "../src/day2/blockchain.day2.js";
 describe('The blockchain', function () {
-    var blockchain = new blockchain_day2_1.Blockchain(); // build a new blockchain
+    var blockchain = new Blockchain(2); // build a new blockchain
     var clock;
     var now = new Date();
     beforeEach(function () {
@@ -35,7 +33,7 @@ describe('The blockchain', function () {
     });
 });
 describe('The blockchain hashing function', function () {
-    var blockchain = new blockchain_day2_1.Blockchain(); // build a new blockchain
+    var blockchain = new Blockchain(2); // build a new blockchain
     var clock;
     var now = new Date();
     beforeEach(function () {
@@ -59,7 +57,7 @@ describe('The blockchain hashing function', function () {
     });
 });
 describe('The blockchain mining and nonce', function () {
-    var blockchain = new blockchain_day2_1.Blockchain(); // build a new blockchain
+    var blockchain = new Blockchain(2); // build a new blockchain
     var clock;
     var now = new Date();
     beforeEach(function () {

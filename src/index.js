@@ -1,10 +1,14 @@
-"use strict";
-exports.__esModule = true;
-var blockchain_day1_1 = require("../src/day1/blockchain.day1");
-var blockchain = new blockchain_day1_1.Blockchain(); // build a new blockchain
+import { Blockchain } from "../src/day2/blockchain.day2.js";
+import boxen from "boxen";
+var blockchain = new Blockchain(2); // build a new blockchain
+console.log("VALID: ", blockchain.validateChain());
 var data = 'some important data';
 var transaction = blockchain.addData(data);
 var new_block = blockchain.addBlock();
-console.log(blockchain);
-var hash = blockchain.getChain()[1].hash;
-console.log(hash);
+console.log("VALID: ", blockchain.validateChain());
+blockchain.addData("hello");
+blockchain.addBlock();
+console.log("VALID: ", blockchain.validateChain());
+blockchain.getChain().forEach(function (block) {
+    console.log(boxen(block.index + "\n" + block.hash + "\n" + block.previous_hash, { padding: 1 }));
+});

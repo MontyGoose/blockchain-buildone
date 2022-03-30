@@ -153,7 +153,7 @@ export class Blockchain {
   }
 
   // Return the last block of the chain
-  // :return: <block> the last block
+  // :return: [<block>] all the blocks in index order
   getChain(){
     return ;
   }
@@ -248,12 +248,12 @@ addData(data : Object) {
   return (this.chain.length + 1);  // next block to be added
 }
 ```
-### Return the whole chain
+### Return the whole chain in index order
 Again, this is simple
 ```Javascript
-getChain(){
-  return this.chain;
-}
+  getChain(){
+    return this.chain.sort((a, b) => a.index - b.index);
+  }
 ```
 ### Adding a block
 A few of things need to happen here

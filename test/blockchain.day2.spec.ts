@@ -7,11 +7,11 @@ import * as crypto from "crypto";
 
 const expect = chai.expect;
 
-import { Blockchain } from "../src/day2/blockchain.day2"
+import { Blockchain } from "../src/day2/blockchain.day2.js"
 
 describe('The blockchain', () => {
 
-  let blockchain = new Blockchain(); // build a new blockchain
+  let blockchain = new Blockchain(2); // build a new blockchain
   let clock;
   let now = new Date();
 
@@ -47,7 +47,7 @@ describe('The blockchain', () => {
 
 
 describe('The blockchain hashing function', () => {
-  let blockchain = new Blockchain(); // build a new blockchain
+  let blockchain = new Blockchain(2); // build a new blockchain
   let clock;
   let now = new Date();
 
@@ -77,7 +77,7 @@ describe('The blockchain hashing function', () => {
 
 
   describe('The blockchain mining and nonce', () => {
-    let blockchain = new Blockchain(); // build a new blockchain
+    let blockchain = new Blockchain(2); // build a new blockchain
     let clock;
     let now = new Date();
   

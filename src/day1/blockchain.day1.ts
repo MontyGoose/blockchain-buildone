@@ -27,7 +27,7 @@ export class Blockchain {
       'timestamp': Date.now(),
       'data':this.blockData,
       'hash':'0',//create with empty hash
-      'previous_hash':(this.chain.length > 0) ? this.hash(this.chain.slice().pop()) : '1'
+      'previous_hash':(this.chain.length > 0) ? this.hash(this.getChain().slice().pop()) : '1'
     }
 
     block.hash = this.hash(block); // create the hash for this block
@@ -47,9 +47,9 @@ export class Blockchain {
   }
 
   // Return the chain
-  // :return: [<block>] the last block
+  // :return: [<block>] all the blocks in index order
   getChain(){
-    return this.chain;
+    return this.chain.sort((a, b) => a.index - b.index);
   }
 
   private hash(block: Block) {
