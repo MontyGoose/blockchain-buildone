@@ -1,5 +1,6 @@
 "use strict";
 exports.__esModule = true;
+exports.Blockchain = void 0;
 var crypto = require("crypto");
 var Blockchain = /** @class */ (function () {
     //this will initialise the blockchain
@@ -18,7 +19,7 @@ var Blockchain = /** @class */ (function () {
             'hash': '0',
             'previous_hash': (this.chain.length > 0) ? this.hash(this.chain.slice().pop()) : '1'
         };
-        block.hash = this.hash(block); // create the hash for this blocks
+        block.hash = this.hash(block); // create the hash for this block
         // Reset the current list of data
         this.blockData = [];
         // add the block to the chain

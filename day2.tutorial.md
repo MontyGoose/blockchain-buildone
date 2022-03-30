@@ -19,3 +19,13 @@ What is a Proof of Work algorithm
 A Proof of Work algorithm is how new Blocks are created or mined on the blockchain - there are different ways to do this
 
 <<PICTURE NEEDED>>  <<and links to other sites on BC PoW>>
+
+Things we changed
+
+Add nonce to block 
+mining function added - and included when adding block
+Hashing function needs to not include actual hash (as this changes as part of mining process)
+
+Our tests fail, as hash changes and also need to change test to just ensure chain is linked....
+
+

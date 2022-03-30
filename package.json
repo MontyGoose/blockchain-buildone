@@ -5,10 +5,13 @@
   "main": "node app.js",
   "scripts": {
     "pretest": "tsc --project tsconfig.json",
-    "test": "mocha 'test/*.spec.js'"
+    "test-d1": "npm run pretest && mocha 'test/blockchain.day1.spec.js'",
+    "test-d2": "npm run pretest && mocha 'test/blockchain.day2.spec.js'",
+    "test": "mocha 'test/*.spec.js'",
+    "start": "npm run pretest && node src/index.js"
   },
   "author": "",
-  "license": "ISC",
+  "license": "ISC", 
   "devDependencies": {
     "@types/chai": "^4.3.0",
     "@types/crypto-js": "^4.1.1",
