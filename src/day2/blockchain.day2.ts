@@ -45,21 +45,21 @@ export class Blockchain {
 
   // Return the chain
   // :return: [<block>] all the blocks in index order
-  getChain(){
+  getChain(): readonly Block[] {
     return this.chain.sort((a, b) => a.index - b.index);
   }
 
-  validateChain() {
+  validateChain(): boolean {
     let valid = true;
-    this.getChain().reverse().forEach((chain, idx, arr) => {
+    this.getChain().forEach((block, idx, arr) => {
       // the hash of the the block should be correct
-      if (chain.hash !== this.hash(chain)) {
-        console.log("VAKK")
+      if (block.hash !== this.hash(block)) {
+  //      console.warn("WARNING! Block has been manipulated at Index: " + block.index);
         valid = false;
       }
-      // the previous_hash should equal the hash of the next previous chain
-      if (arr[idx + 1] && arr[idx + 1].hash !== chain.previous_hash) {
-        console.log(idx,chain.previous_hash,arr[idx + 1].hash)
+      // the previous_hash should equal the hash of the next previous bloack
+      if (arr[idx + 1] && arr[idx + 1].previous_hash !== block.hash) {
+    //    console.warn("WARNING! Link between blocks has been manipulated between Index: " + block.index + " and Index: " + arr[idx + 1].index);
         valid = false;
       }
     });

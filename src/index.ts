@@ -18,6 +18,7 @@ console.time("block3")
 blockchain.addBlock()
 console.timeEnd("block3")
 
+blockchain.getChain()[1].data = ["something else"]
 
 console.log("VALID: ",blockchain.validateChain());
 

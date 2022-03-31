@@ -57,7 +57,6 @@ describe('The blockchain hashing function', function () {
     });
 });
 describe('The chain should validate', function () {
-    var blockchain = new Blockchain(2); // build a new blockchain
     var clock;
     var now = new Date();
     beforeEach(function () {
@@ -67,10 +66,24 @@ describe('The chain should validate', function () {
         clock.restore();
     });
     it('should validate', function () {
-        var data = { 'important': 'some important data' };
-        blockchain.addData(data);
-        var block = blockchain.addBlock();
+        var blockchain = new Blockchain(0); // build a new blockchain
+        blockchain.addData({ 'important': 'some important data' });
+        blockchain.addBlock();
         expect(blockchain.validateChain()).to.equal(true);
+    });
+    it('should not validate is a block is tampered with', function () {
+        var blockchain = new Blockchain(0); // build a new blockchain
+        blockchain.addData({ 'important': 'some important data' });
+        blockchain.addBlock();
+        blockchain.getChain()[1].data = ["something else"]; // change the data
+        expect(blockchain.validateChain()).to.equal(false);
+    });
+    it('should not validate is the chain is tampered with', function () {
+        var blockchain = new Blockchain(0); // build a new blockchain
+        blockchain.addData({ 'important': 'some important data' });
+        blockchain.addBlock();
+        blockchain.getChain()[1].previous_hash = "1"; // repoint the previous hash
+        expect(blockchain.validateChain()).to.equal(false);
     });
 });
 describe('The blockchain mining and nonce', function () {
