@@ -56,6 +56,23 @@ describe('The blockchain hashing function', function () {
         expect(blockchain.getChain()[2].previous_hash).to.equal(blockchain.getChain()[1].hash); // previous hash should equal hashedGenesisBlock
     });
 });
+describe('The chain should validate', function () {
+    var blockchain = new Blockchain(2); // build a new blockchain
+    var clock;
+    var now = new Date();
+    beforeEach(function () {
+        clock = sinon.useFakeTimers(now.getTime());
+    });
+    afterEach(function () {
+        clock.restore();
+    });
+    it('should validate', function () {
+        var data = { 'important': 'some important data' };
+        blockchain.addData(data);
+        var block = blockchain.addBlock();
+        expect(blockchain.validateChain()).to.equal(true);
+    });
+});
 describe('The blockchain mining and nonce', function () {
     var blockchain = new Blockchain(2); // build a new blockchain
     var clock;

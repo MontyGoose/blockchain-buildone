@@ -22,6 +22,11 @@ A Proof of Work algorithm is how new Blocks are created or mined on the blockcha
 
 Things we changed
 
+Add a function to validate the chain
+Simple checks - does the hash still represent the block (will show if the hash or contents have been tampered with); 
+- does the previous_hash (as set) match the previous block (Will show if the chain has been tampered with)
+
+Do some mining ... Proof OF Work
 Add nonce to block 
 mining function added - and included when adding block
 Hashing function needs to not include actual hash (as this changes as part of mining process)

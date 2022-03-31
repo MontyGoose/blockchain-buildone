@@ -1,14 +1,24 @@
 import { Blockchain } from "../src/day2/blockchain.day2.js"
 import boxen from "boxen"
 
+console.time("block1")
 let blockchain = new Blockchain(2); // build a new blockchain
-console.log("VALID: ",blockchain.validateChain());
+console.timeEnd("block1");
+
+
 let data = 'some important data';
 let transaction = blockchain.addData(data);
+console.time("block2")
 let new_block = blockchain.addBlock();
-console.log("VALID: ",blockchain.validateChain());
+console.timeEnd("block2")
+
+
 blockchain.addData("hello")
+console.time("block3")
 blockchain.addBlock()
+console.timeEnd("block3")
+
+
 console.log("VALID: ",blockchain.validateChain());
 
 

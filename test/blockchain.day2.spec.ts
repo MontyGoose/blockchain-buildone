@@ -76,6 +76,28 @@ describe('The blockchain hashing function', () => {
 });
 
 
+describe('The chain should validate', () => {
+  let blockchain = new Blockchain(2); // build a new blockchain
+  let clock;
+  let now = new Date();
+
+  beforeEach(() => {
+    clock = sinon.useFakeTimers(now.getTime());
+  });
+  afterEach(() => {
+    clock.restore();
+  });
+
+  it('should validate', () => {
+    let data = { 'important': 'some important data' };
+    blockchain.addData(data);
+    let block = blockchain.addBlock();
+    expect(blockchain.validateChain()).to.equal(true);
+  });
+
+
+})
+
   describe('The blockchain mining and nonce', () => {
     let blockchain = new Blockchain(2); // build a new blockchain
     let clock;
