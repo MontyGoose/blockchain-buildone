@@ -4,11 +4,11 @@
   "description": "",
   "main": "node app.js",
   "type": "module",
-
   "scripts": {
     "pretest": "tsc --project tsconfig.json",
     "test-d1": "npm run pretest && mocha 'test/blockchain.day1.spec.js'",
     "test-d2": "npm run pretest && mocha 'test/blockchain.day2.spec.js'",
+    "coins": "npm run pretest && node src/example/coin.js",
     "test": "mocha 'test/*.spec.js'",
     "start": "clear && npm run pretest && node src/index.js"
   },
