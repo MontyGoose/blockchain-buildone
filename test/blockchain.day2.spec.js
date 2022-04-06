@@ -69,21 +69,23 @@ describe('The chain should validate', function () {
         var blockchain = new Blockchain(0); // build a new blockchain
         blockchain.addData({ 'important': 'some important data' });
         blockchain.addBlock();
-        expect(blockchain.validateChain()).to.equal(true);
+        expect(blockchain.validateChain()).to.be.an('array').that.is.empty;
     });
     it('should not validate is a block is tampered with', function () {
         var blockchain = new Blockchain(0); // build a new blockchain
         blockchain.addData({ 'important': 'some important data' });
         blockchain.addBlock();
         blockchain.getChain()[1].data = ["something else"]; // change the data
-        expect(blockchain.validateChain()).to.equal(false);
+        expect(blockchain.validateChain()).to.be.an('array').that.is.not.empty;
+        expect(blockchain.validateChain()).to.deep.include({ index: 2, error: "Data has been manipulated" });
     });
     it('should not validate is the chain is tampered with', function () {
         var blockchain = new Blockchain(0); // build a new blockchain
         blockchain.addData({ 'important': 'some important data' });
         blockchain.addBlock();
         blockchain.getChain()[1].previous_hash = "1"; // repoint the previous hash
-        expect(blockchain.validateChain()).to.equal(false);
+        expect(blockchain.validateChain()).to.be.an('array').that.is.not.empty;
+        expect(blockchain.validateChain()).to.deep.include({ index: 2, error: "Data has been manipulated" });
     });
 });
 describe('The blockchain mining and nonce', function () {

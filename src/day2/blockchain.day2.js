@@ -33,17 +33,17 @@ var Blockchain = /** @class */ (function () {
     };
     Blockchain.prototype.validateChain = function () {
         var _this = this;
-        var valid = true;
+        var valid = [];
         this.getChain().forEach(function (block, idx, arr) {
             // the hash of the the block should be correct
             if (block.hash !== _this.hash(block)) {
                 //      console.warn("WARNING! Block has been manipulated at Index: " + block.index);
-                valid = false;
+                valid.push({ index: block.index, error: "Data has been manipulated" });
             }
             // the previous_hash should equal the hash of the next previous bloack
             if (arr[idx + 1] && arr[idx + 1].previous_hash !== block.hash) {
                 //    console.warn("WARNING! Link between blocks has been manipulated between Index: " + block.index + " and Index: " + arr[idx + 1].index);
-                valid = false;
+                valid.push({ index: block.index, error: "Chaine has been manipulated to " + arr[idx + 1] });
             }
         });
         return valid;
